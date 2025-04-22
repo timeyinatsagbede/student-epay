@@ -57,6 +57,32 @@ app.post('/admin/add-student', async (req, res) => {
   }
 });
 
+// Add transaction
+app.post("/admin/transaction", async (req, res) => {
+    const { student_id, type, amount } = req.body;
+  
+    if (!student_id || !type || isNaN(amount)) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+  
+    const conn = await pool.getConnection();
+  
+    try {
+      await conn.execute(
+        "INSERT INTO transactions (student_id, type, amount) VALUES (?, ?, ?)",
+        [student_id, type, amount]
+      );
+  
+      res.status(200).json({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    } finally {
+      conn.release();
+    }
+  });
+ 
+
 // Catch-all for unknown routes
 app.use((req, res) => {
   res.status(404).send('Not found');
