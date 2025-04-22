@@ -36,9 +36,9 @@ app.post("/student/:id", async (req, res) => {
       }
   
       const [transactions] = await conn.execute(
-        "SELECT type, amount, date FROM transactions WHERE student_id = ? ORDER BY date DESC",
+        "SELECT type, amount FROM transactions WHERE student_id = ?",
         [studentId]
-      );
+      );      
   
       const [balanceResult] = await conn.execute(
         `SELECT SUM(

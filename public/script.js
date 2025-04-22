@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         result.transactions.forEach((tx) => {
           const li = document.createElement("li");
-          li.textContent = `${tx.type} — $${tx.amount} (${new Date(tx.date).toLocaleDateString()})`;
+          li.textContent = `${tx.type} — $${tx.amount}`;
           transactionList.appendChild(li);
         });
 
