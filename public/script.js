@@ -137,6 +137,11 @@ document.addEventListener("DOMContentLoaded", () => {
         body: JSON.stringify(data),
       });
 
+      if (!response.ok) {
+        const text = await response.text(); // Try to capture the raw error
+        throw new Error(`Server returned ${response.status}: ${text}`);
+      }
+
       const result = await response.json();
 
       if (result.error) {
