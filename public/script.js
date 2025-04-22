@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         studentName.textContent = `${result.first_name} ${result.last_name}`;
-        studentBalance.textContent = result.balance.toFixed(2);
+        studentBalance.textContent = Number(result.balance || 0).toFixed(2);
         transactionList.innerHTML = "";
 
         result.transactions.forEach((tx) => {
