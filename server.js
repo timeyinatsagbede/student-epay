@@ -19,14 +19,16 @@ app.get('/', (req, res) => {
 });
 
 // Check student balance
-app.get("/student/:id", async (req, res) => {
+app.post("/student/:id", async (req, res) => {
     const studentId = req.params.id;
+    const { first_name, last_name } = req.body;
+  
     const conn = await pool.getConnection();
   
     try {
       const [[student]] = await conn.execute(
-        "SELECT first_name, last_name FROM students WHERE student_id = ?",
-        [studentId]
+        "SELECT first_name, last_name FROM students WHERE student_id = ? AND first_name = ? AND last_name = ?",
+        [studentId, first_name, last_name]
       );
   
       if (!student) {
@@ -63,7 +65,7 @@ app.get("/student/:id", async (req, res) => {
     } finally {
       conn.release();
     }
-  });
+  });  
 
 // Add new student
 app.post('/admin/add-student', async (req, res) => {
