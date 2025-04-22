@@ -18,6 +18,53 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
+// Check student balance
+app.get("/student/:id", async (req, res) => {
+    const studentId = req.params.id;
+    const conn = await pool.getConnection();
+  
+    try {
+      const [[student]] = await conn.execute(
+        "SELECT first_name, last_name FROM students WHERE student_id = ?",
+        [studentId]
+      );
+  
+      if (!student) {
+        return res.status(404).json({ error: "Student not found" });
+      }
+  
+      const [transactions] = await conn.execute(
+        "SELECT type, amount, date FROM transactions WHERE student_id = ? ORDER BY date DESC",
+        [studentId]
+      );
+  
+      const [balanceResult] = await conn.execute(
+        `SELECT SUM(
+           CASE
+             WHEN type = 'charge' THEN amount
+             ELSE -amount
+           END
+         ) AS balance
+         FROM transactions WHERE student_id = ?`,
+        [studentId]
+      );
+  
+      const balance = balanceResult[0].balance || 0;
+  
+      res.json({
+        first_name: student.first_name,
+        last_name: student.last_name,
+        balance,
+        transactions
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
+    } finally {
+      conn.release();
+    }
+  });
+
 // Add new student
 app.post('/admin/add-student', async (req, res) => {
   const { first_name, last_name, student_id, initial_transaction } = req.body;

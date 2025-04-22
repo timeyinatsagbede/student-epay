@@ -21,7 +21,8 @@
           Admin
         </label>
       </div>
-      
+    
+    <!-- Student Lookup Form -->
     <form id="student-form" method="post">
       <label>
         First Name:
@@ -38,8 +39,16 @@
         <input type="text" name="student_id" required />
       </label>
 
-      <button type="submit">Search</button>
+      <button type="submit">Chceck Balance</button>
     </form>
+
+    <!-- Student Results -->
+    <div id="student-info" style="display: none; margin-top: 20px;">
+      <h3 id="student-name"></h3>
+      <p><strong>Balance:</strong> $<span id="student-balance">0.00</span></p>
+      <h4>Transactions:</h4>
+      <ul id="transaction-list"></ul>
+    </div>
 
     <!-- Admin Panel -->
     <div id="admin-panel" style="display: none; flex-direction: column; gap: 20px;">

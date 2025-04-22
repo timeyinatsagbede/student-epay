@@ -9,6 +9,11 @@ document.addEventListener("DOMContentLoaded", () => {
   const transactionTab = document.getElementById("transaction-tab");
   const studentTab = document.getElementById("student-tab");
 
+  const studentInfo = document.getElementById("student-info");
+  const studentName = document.getElementById("student-name");
+  const studentBalance = document.getElementById("student-balance");
+  const transactionList = document.getElementById("transaction-list");
+
   // Handle role switching
   roleRadios.forEach((radio) => {
     radio.addEventListener("change", (e) => {
@@ -41,40 +46,49 @@ document.addEventListener("DOMContentLoaded", () => {
     studentTab.classList.add("active-tab");
   });
 
-  // Handle student form submission
+  // Handle student balance lookup form
   studentForm.addEventListener("submit", async function (event) {
     event.preventDefault();
 
     const formData = new FormData(studentForm);
 
-    const data = {
-      first_name: formData.get("first_name"),
-      last_name: formData.get("last_name"),
-      student_id: formData.get("student_id"),
-    };
+    const studentId = formData.get("student_id");
+    const firstName = formData.get("first_name");
+    const lastName = formData.get("last_name");
 
     try {
-      const response = await fetch("/check-default", {
+      const response = await fetch(`/student/${studentId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name: lastName,
+        }),
       });
 
       const result = await response.json();
 
-      if (result.error) {
-        alert("Error: " + result.error);
+      if (response.ok) {
+        studentName.textContent = `${result.first_name} ${result.last_name}`;
+        studentBalance.textContent = result.balance.toFixed(2);
+        transactionList.innerHTML = "";
+
+        result.transactions.forEach((tx) => {
+          const li = document.createElement("li");
+          li.textContent = `${tx.type} — $${tx.amount} (${new Date(tx.date).toLocaleDateString()})`;
+          transactionList.appendChild(li);
+        });
+
+        studentInfo.style.display = "block";
       } else {
-        alert(
-          `${result.name} ${
-            result.defaulting ? "is defaulting." : "is not defaulting."
-          }`
-        );
+        alert(`Error: ${result.error}`);
+        studentInfo.style.display = "none";
       }
     } catch (err) {
       alert("Something went wrong: " + err.message);
+      studentInfo.style.display = "none";
     }
   });
 
@@ -125,7 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       initial_transaction: {
         type: "charge",
         amount: parseFloat(formData.get("new_transaction_amount")),
-      }      
+      }
     };
 
     try {
@@ -138,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (!response.ok) {
-        const text = await response.text(); // Try to capture the raw error
+        const text = await response.text();
         throw new Error(`Server returned ${response.status}: ${text}`);
       }
 
