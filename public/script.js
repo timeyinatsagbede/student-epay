@@ -123,9 +123,9 @@ document.addEventListener("DOMContentLoaded", () => {
       last_name: formData.get("new_last_name"),
       student_id: formData.get("new_student_id"),
       initial_transaction: {
-        type: formData.get("new_transaction_type"),
+        type: "charge",
         amount: parseFloat(formData.get("new_transaction_amount")),
-      },
+      }      
     };
 
     try {
