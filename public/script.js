@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (e.target.value === "student") {
         studentForm.style.display = "flex";
         adminPanel.style.display = "none";
+        studentInfo.style.display = "none";
       } else {
         studentForm.style.display = "none";
         adminPanel.style.display = "flex";
@@ -27,6 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
         addStudentForm.style.display = "none";
         transactionTab.classList.add("active-tab");
         studentTab.classList.remove("active-tab");
+        studentInfo.style.display = "none";
       }
     });
   });
